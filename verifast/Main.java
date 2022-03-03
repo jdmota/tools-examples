@@ -36,6 +36,7 @@ public class Main {
     t.dropFileReader(f3);
   }
   
+  // Same as "main", but the FileReadersTracker is not used
   public static void main2(String[] args)
     //@ requires true;
     //@ ensures true;
@@ -87,6 +88,17 @@ public class Main {
       //@ foreach_append(a, cons(f, nil));
     }
     //@ dispose_iterator(it);
+  }
+
+  // Notice how we can arbitrarily say we completed the protocol while in fact we did not
+  // This code is accepted by Verifast
+  public static void wrongMain(String[] args)
+    //@ requires true;
+    //@ ensures tracker(nil);
+  {
+    FileReadersTracker t = new FileReadersTracker();
+    FileReader f = t.newFileReader("file");
+    //@ close tracker(nil);
   }
 
 }
