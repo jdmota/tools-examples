@@ -24,7 +24,7 @@ class Callback implements Runnable {
 public class CallbackWithoutLocks {
 
   // Without locks this kind of sharing is not possible
-  // If we uncomment the lines below, Verifast will complain
+  // If we uncomment the lines below, VeriFast will complain
   public static void main(String[] args)
     //@ requires true;
     //@ ensures true;

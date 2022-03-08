@@ -91,7 +91,7 @@ public class Main {
   }
 
   // Notice how we can arbitrarily say we completed the protocol while in fact we did not
-  // This code is accepted by Verifast
+  // This code is accepted by VeriFast
   public static void wrongMain(String[] args)
     //@ requires true;
     //@ ensures tracker(nil);

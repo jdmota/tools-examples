@@ -61,7 +61,7 @@ class CCallback implements Runnable {
 
 public class CallbackWithLocks {
 
-  // By using locks, this kind of sharing is accepted by Verifast
+  // By using locks, this kind of sharing is accepted by VeriFast
   // but locks here are unnecessary, given that we are in a single-threaded context
   public static void main(String[] args)
     //@ requires true;
