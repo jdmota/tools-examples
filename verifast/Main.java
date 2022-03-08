@@ -1,5 +1,5 @@
 /*@
-predicate_ctor INV(int state)(FileReader f) = f != null &*& filereader(f, state, _);
+predicate_ctor INV(int state)(FileReader f;) = f != null &*& filereader(f, state, _);
 @*/
 
 public class Main {
@@ -16,21 +16,14 @@ public class Main {
     list.add(f1);
     list.add(f2);
     list.add(f3);
-    //@ close INV(FileReader.STATE_INIT)(f1);
-    //@ close INV(FileReader.STATE_INIT)(f2);
-    //@ close INV(FileReader.STATE_INIT)(f3);
     //@ assert llist(list, _, _, ?l);
-    //@ close foreach(nil, INV(FileReader.STATE_INIT));
-    //@ close foreach(cons(f3, nil), INV(FileReader.STATE_INIT));
-    //@ close foreach(cons(f2, cons(f3, nil)), INV(FileReader.STATE_INIT));
-    //@ close foreach(l, INV(FileReader.STATE_INIT));
+    //@ close foreachp(cons(f3, nil), INV(FileReader.STATE_INIT));
+    //@ close foreachp(cons(f2, cons(f3, nil)), INV(FileReader.STATE_INIT));
+    //@ close foreachp(l, INV(FileReader.STATE_INIT));
     useFiles(list);
-    //@ open foreach(l, INV(FileReader.STATE_CLOSED));
-    //@ open foreach(cons(f2, cons(f3, nil)), INV(FileReader.STATE_CLOSED));
-    //@ open foreach(cons(f3, nil), INV(FileReader.STATE_CLOSED));
-    //@ open INV(FileReader.STATE_CLOSED)(f1);
-    //@ open INV(FileReader.STATE_CLOSED)(f2);
-    //@ open INV(FileReader.STATE_CLOSED)(f3);
+    //@ open foreachp(l, INV(FileReader.STATE_CLOSED));
+    //@ open foreachp(cons(f2, cons(f3, nil)), INV(FileReader.STATE_CLOSED));
+    //@ open foreachp(cons(f3, nil), INV(FileReader.STATE_CLOSED));
     t.dropFileReader(f1);
     t.dropFileReader(f2);
     t.dropFileReader(f3);
@@ -48,44 +41,38 @@ public class Main {
     list.add(f1);
     list.add(f2);
     list.add(f3);
-    //@ close INV(FileReader.STATE_INIT)(f1);
-    //@ close INV(FileReader.STATE_INIT)(f2);
-    //@ close INV(FileReader.STATE_INIT)(f3);
     //@ assert llist(list, _, _, ?l);
-    //@ close foreach(nil, INV(FileReader.STATE_INIT));
-    //@ close foreach(cons(f3, nil), INV(FileReader.STATE_INIT));
-    //@ close foreach(cons(f2, cons(f3, nil)), INV(FileReader.STATE_INIT));
-    //@ close foreach(l, INV(FileReader.STATE_INIT));
+    //@ close foreachp(cons(f3, nil), INV(FileReader.STATE_INIT));
+    //@ close foreachp(cons(f2, cons(f3, nil)), INV(FileReader.STATE_INIT));
+    //@ close foreachp(l, INV(FileReader.STATE_INIT));
     useFiles(list);
   }
   
   public static void useFiles(LinkedList list)
-    //@ requires list != null &*& llist(list, _, _, ?l) &*& foreach(l, INV(FileReader.STATE_INIT));
-    //@ ensures list != null &*& llist(list, _, _, l) &*& foreach(l, INV(FileReader.STATE_CLOSED));
+    //@ requires list != null &*& llist(list, _, _, ?l) &*& foreachp(l, INV(FileReader.STATE_INIT));
+    //@ ensures list != null &*& llist(list, _, _, l) &*& foreachp(l, INV(FileReader.STATE_CLOSED));
   {
-    //@ close foreach(nil, INV(FileReader.STATE_CLOSED));
     LinkedListIterator it = list.iterator();
     while (it.hasNext())
       /*@ invariant it != null &*& iterator(list, it, _, l, ?a, ?b) &*&
-          foreach(a, INV(FileReader.STATE_CLOSED)) &*&
-          foreach(b, INV(FileReader.STATE_INIT));
+          foreachp(a, INV(FileReader.STATE_CLOSED)) &*&
+          foreachp(b, INV(FileReader.STATE_INIT));
        @*/
     {
       FileReader f = it.next();
-      //@ open foreach(b, _);
+      //@ open foreachp(b, _);
       //@ open INV(FileReader.STATE_INIT)(f);
       f.open();
       while (!f.eof())
-      //@ invariant f != null &*& filereader(f, FileReader.STATE_OPENED, _);
+        //@ invariant f != null &*& filereader(f, FileReader.STATE_OPENED, _);
       {
         //@ open filereader(f, _, _);
         f.read();
       }
       f.close();
-      //@ close INV(FileReader.STATE_CLOSED)(f);
-      //@ close foreach(nil, INV(FileReader.STATE_CLOSED));
-      //@ close foreach(cons(f, nil), INV(FileReader.STATE_CLOSED));
-      //@ foreach_append(a, cons(f, nil));
+      //@ close foreachp(nil, INV(FileReader.STATE_CLOSED));
+      //@ close foreachp(cons(f, nil), INV(FileReader.STATE_CLOSED));
+      //@ foreachp_append(a, cons(f, nil));
     }
     //@ dispose_iterator(it);
   }
