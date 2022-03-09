@@ -1,0 +1,13 @@
+/*@
+
+predicate tracker(int count);
+
+lemma void increment_tracker();
+  requires tracker(?n);
+  ensures tracker(n + 1);
+
+lemma void decrement_tracker();
+  requires tracker(?n);
+  ensures tracker(n - 1);
+
+@*/
