@@ -6,7 +6,7 @@ public class Main {
 
   public static void main(String[] args)
     //@ requires true;
-    //@ ensures tracker(nil);
+    //@ ensures tracker_list(nil);
   {
     FileReadersTracker t = new FileReadersTracker();
     LinkedList list = new LinkedList();
@@ -81,11 +81,11 @@ public class Main {
   // This code is accepted by VeriFast
   public static void wrongMain(String[] args)
     //@ requires true;
-    //@ ensures tracker(nil);
+    //@ ensures tracker_list(nil);
   {
     FileReadersTracker t = new FileReadersTracker();
     FileReader f = t.newFileReader("file");
-    //@ close tracker(nil);
+    //@ close tracker_list(nil);
   }
 
 }
