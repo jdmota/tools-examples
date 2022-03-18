@@ -2,10 +2,14 @@
 predicate holds(predicate() p) = p();
 
 predicate eventloop(EventLoop e, int id, list<predicate()> preds) =
-  e.cb1 |-> ?cb1 &*& e.cb2 |-> ?cb2 &*& (cb1 == null ? emp : callback(cb1, id, _)) &*& (cb2 == null ? emp : callback(cb2, id, _)) &*&
+  e.cb1 |-> ?cb1 &*& e.cb2 |-> ?cb2 &*&
+  (cb1 == null ? emp : callback(cb1, id, _)) &*& (cb2 == null ? emp : callback(cb2, id, _)) &*&
   strong_ghost_list<predicate()>(id, preds) &*& foreach<predicate()>(preds, holds);
 
 predicate_ctor listCtor(LinkedList l)() = l != null &*& llist(l, _, _, _);
+
+predicate callback(Callback3 cb, int id, LinkedList l) =
+  cb.list |-> l &*& [_]strong_ghost_list_member_handle(id, listCtor(l));
 
 lemma void create_eventloop(EventLoop e)
   requires e.cb1 |-> null &*& e.cb2 |-> null;
@@ -15,8 +19,6 @@ lemma void create_eventloop(EventLoop e)
   close foreach(nil, holds);
   close eventloop(e, id, nil);
 }
-
-predicate callback(Callback3 cb, int id, LinkedList l) = cb.list |-> l &*& [1/2]strong_ghost_list_member_handle(id, listCtor(l));
 @*/
 
 class Callback3 {
@@ -24,7 +26,7 @@ class Callback3 {
   private LinkedList list;
 
   public Callback3(LinkedList l)
-    //@ requires [1/2]strong_ghost_list_member_handle(?id, listCtor(l));
+    //@ requires [_]strong_ghost_list_member_handle(?id, listCtor(l));
     //@ ensures callback(this, id, l);
   {
     this.list = l;
@@ -123,6 +125,7 @@ class EventLoop {
     //@ close listCtor(l)();
     e.addObject(l);
     
+    //@ split_fraction strong_ghost_list_member_handle(_, listCtor(l));
     Callback3 c1 = new Callback3(l);
     Callback3 c2 = new Callback3(l);
     e.addCallback(c1);
