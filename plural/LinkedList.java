@@ -1,64 +1,72 @@
-import edu.cmu.cs.plural.annot.Perm;
-import edu.cmu.cs.plural.annot.States;
+import edu.cmu.cs.plural.annot.*;
 
-@States(value={"withNext", "withoutNext"}, refine="alive")
+@Similar("p")
+@Refine({
+  @States(value={"withoutValue"}, refined="alive"),
+  @States(value={"withValue"}, refined="alive")
+})
 @ClassStates({
-  @State(name="withNext", inv="pure(value) * unique(next)"),
-  @State(name="withoutNext", inv="pure(value) * none(next)")
+  @State(name="withoutValue", inv="unique(next) in withValue"),
+  @State(name="withValue", inv="unique(next) in withValue * p(value)")
 })
 class Node<T> {
-  private T value;
+  @Apply("p")
   private Node<T> next;
+  private T value;
 
-  @Perm(requires="pure(value)", ensures="unique(this) in withoutNext")
-  public Node(T value) {
+  @Perm(ensures="unique(this!fr) in withValue")
+  public Node(@PolyVar(value="p", returned=false) T value) {
     this.value = value;
     this.next = null;
   }
 
-  @Perm(
-    requires="unique(this) in withNext",
-    ensures="unique(this) in withoutNext * unique(result)"
-  )
+  @Unique(requires="alive")
+	@ResultUnique(ensures="withValue")
+	@ResultApply("p")
   public Node<T> getNext() {
     return this.next;
   }
 
-  @Perm(
-    requires="unique(this) in withoutNext * unique(next)",
-    ensures="unique(this) in withNext"
-  )
-  public void setNext(Node<T> next) {
+  @Unique(requires="withValue", ensures="withValue")
+  public void setNext(
+    @Unique(requires="withValue", returned=false) @Apply("p") Node<T> next
+  ) {
     this.next = next;
   }
 
-  @Perm(requires="pure(this)", ensures="pure(this) * pure(result)")
+  @Unique(requires="withValue", ensures="withoutValue")
+	@ResultPolyVar("p")
   public T getValue() {
     return this.value;
   }
 }
 
-@States(value={"empty", "notEmpty"}, refine="alive")
+@Similar("p")
+@Refine({
+  @States(value={"empty", "notEmpty"}, refined="alive")
+})
 @ClassStates({
   @State(name="empty", inv="head == null * tail == null"),
   @State(
     name="notEmpty",
-    inv="unique(head) in withNext * head != null * tail != null"
+    inv="unique(head) in withValue * head != null * tail != null"
   )
 })
 public class LinkedList<T> {
+  @Apply("p")
   private Node<T> head;
+  @Apply("p")
   private Node<T> tail;
 
-  @Perm(requires="one", ensures="unique(this) in empty")
+  @Perm(ensures="unique(this!fr) in empty")
   public LinkedList() {
     head = null;
     tail = null;
   }
 
-  @Perm(requires="full(this) * pure(element)", ensures="full(this) in notEmpty")
-  public void add(T element) {
-    Node<T> n = new Node<>(element);
+  @Unique(ensures="notEmpty")
+  public void add(@PolyVar(value="p", returned=false) T value) {
+    @Apply("p") Node<T> n = new Node<>(value);
     if (head == null) {
       head = n;
       tail = n;
@@ -68,7 +76,8 @@ public class LinkedList<T> {
     }
   }
 
-  @Perm(requires="full(this) in notEmpty", ensures="full(this) * pure(result)")
+  @Unique(requires="notEmpty")
+  @ResultPolyVar("p")
   public T remove() {
     T result = head.getValue();
     head = head.getNext();
