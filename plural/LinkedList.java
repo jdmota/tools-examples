@@ -1,58 +1,63 @@
+import edu.cmu.cs.plural.annot.Perm;
+import edu.cmu.cs.plural.annot.States;
+
+@States(value={"withNext", "withoutNext"}, refine="alive")
+@ClassStates({
+  @State(name="withNext", inv="pure(value) * unique(next)"),
+  @State(name="withoutNext", inv="pure(value) * none(next)")
+})
 class Node<T> {
   private T value;
   private Node<T> next;
-  
-  // states withNext, withoutNext refine alive;
 
-  // withNext := pure(value) && unique(next)
-  // withoutNext := pure(value) && none(next)
-
-  public Node(T value)
-    // pure(value) -o unique(this) in withoutNext
-  {
+  @Perm(requires="pure(value)", ensures="unique(this) in withoutNext")
+  public Node(T value) {
     this.value = value;
     this.next = null;
   }
 
-  public Node<T> getNext()
-    // unique(this) in withNext -o unique(this) in withoutNext && unique(result)
-  {
+  @Perm(
+    requires="unique(this) in withNext",
+    ensures="unique(this) in withoutNext * unique(result)"
+  )
+  public Node<T> getNext() {
     return this.next;
   }
 
-  public void setNext(Node<T> next)
-    // unique(this) in withoutNext && unique(next) -o unique(this) in withNext
-  {
+  @Perm(
+    requires="unique(this) in withoutNext * unique(next)",
+    ensures="unique(this) in withNext"
+  )
+  public void setNext(Node<T> next) {
     this.next = next;
   }
 
-  public T getValue() 
-    // pure(this) -o pure(this) && pure(result)
-  {
+  @Perm(requires="pure(this)", ensures="pure(this) * pure(result)")
+  public T getValue() {
     return this.value;
   }
 }
 
+@States(value={"empty", "notEmpty"}, refine="alive")
+@ClassStates({
+  @State(name="empty", inv="head == null * tail == null"),
+  @State(
+    name="notEmpty",
+    inv="unique(head) in withNext * head != null * tail != null"
+  )
+})
 public class LinkedList<T> {
-
   private Node<T> head;
   private Node<T> tail;
 
-  // states empty, notEmpty refine alive;
-  
-  // empty := head == null && tail == null;
-  // notEmpty := unique(head) in withNext && head != null && tail != null;
-  
-  public LinkedList()
-    // 1 -o unique(this) in empty
-  {
+  @Perm(requires="one", ensures="unique(this) in empty")
+  public LinkedList() {
     head = null;
     tail = null;
   }
 
-  public void add(T element)
-    // full(this) && pure(element) -o full(this) in notEmpty
-  {
+  @Perm(requires="full(this) * pure(element)", ensures="full(this) in notEmpty")
+  public void add(T element) {
     Node<T> n = new Node<>(element);
     if (head == null) {
       head = n;
@@ -63,9 +68,8 @@ public class LinkedList<T> {
     }
   }
 
-  public T remove()
-    // full(this) in notEmpty -o full(this) && pure(result)
-  {
+  @Perm(requires="full(this) in notEmpty", ensures="full(this) * pure(result)")
+  public T remove() {
     T result = head.getValue();
     head = head.getNext();
     if (head == null) {

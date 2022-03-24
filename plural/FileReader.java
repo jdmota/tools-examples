@@ -1,42 +1,41 @@
+import edu.cmu.cs.plural.annot.Perm;
+import edu.cmu.cs.plural.annot.States;
+
+@States(value={"init", "opened", "closed"}, refine="alive")
+@States(value={"eof", "notEof"}, refine="opened")
+@ClassStates({
+  @State(name="eof", inv="remaining == 0"),
+  @State(name="notEof", inv="remaining != 0")
+})
 public class FileReader {
   private int remaining;
 
-  // states init, opened, closed refine alive;
-  // states eof, notEof refine opened;
-
-  // eof := remaining == 0;
-  // notEof := remaining > 0;
-
-  public FileReader(String filename)
-    // 1 -o unique(this) in init
-  {
+  @Perm(requires="one", ensures="unique(this) in init")
+  public FileReader(String filename) {
     this.remaining = 20;
   }
 
-  public boolean open()
-    // full(this) in init -o full(this) in opened
-  {
+  @Perm(requires="full(this) in init", ensures="full(this) in opened")
+  public boolean open() {
     return true;
   }
 
-  public byte read()
-    // full(this) in notEof -o full(this) in opened
-  {
+  @Perm(requires="full(this) in notEof", ensures="full(this) in opened")
+  public byte read() {
     this.remaining--;
     return 0;
   }
 
-  public boolean eof()
-    // pure(this) in opened -o
-    //     (result == true && pure(this) in eof) ||
-    //     (result == false && pure(this) in notEof)
-  {
+  @Perm(
+    requires="pure(this) in opened",
+    ensures="(result == true * pure(this) in eof) + (result == false * pure(this) in notEof)"
+  )
+  public boolean eof() {
     return this.remaining == 0;
   }
 
-  public void close()
-    // full(this) in eof -o full(this) in closed
-  {
+  @Perm(requires="full(this) in eof", ensures="full(this) in closed")
+  public void close() {
 
   }
 }
