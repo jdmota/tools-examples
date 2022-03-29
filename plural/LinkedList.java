@@ -15,29 +15,29 @@ class Node<T> {
   private T value;
 
   @Perm(ensures="unique(this!fr) in withValue")
-  public Node(@PolyVar(value="p", returned=false) T value) {
-    this.value = value;
-    this.next = null;
+  public Node(@PolyVar(value="p", returned=false) T val) {
+    value = val;
+    next = null;
   }
 
   @Unique(requires="alive")
 	@ResultUnique(ensures="withValue")
 	@ResultApply("p")
   public Node<T> getNext() {
-    return this.next;
+    return next;
   }
 
   @Unique(requires="withValue", ensures="withValue")
   public void setNext(
-    @Unique(requires="withValue", returned=false) @Apply("p") Node<T> next
+    @Unique(requires="withValue", returned=false) @Apply("p") Node<T> n
   ) {
-    this.next = next;
+    next = n;
   }
 
   @Unique(requires="withValue", ensures="withoutValue")
 	@ResultPolyVar("p")
   public T getValue() {
-    return this.value;
+    return value;
   }
 }
 

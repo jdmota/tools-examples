@@ -13,7 +13,7 @@ public class FileReader {
 
   @Perm(ensures="unique(this!fr) in init")
   public FileReader(String filename) {
-    this.remaining = 20;
+    remaining = 20;
   }
 
   @Full(requires="init", ensures="opened")
@@ -23,7 +23,7 @@ public class FileReader {
 
   @Full(requires="notEof", ensures="opened")
   public byte read() {
-    this.remaining--;
+    remaining--;
     return 0;
   }
 
@@ -31,7 +31,7 @@ public class FileReader {
   @TrueIndicates("eof")
   @FalseIndicates("notEof")
   public boolean eof() {
-    return this.remaining == 0;
+    return remaining == 0;
   }
 
   @Full(requires="eof", ensures="closed")
