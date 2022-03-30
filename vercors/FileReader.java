@@ -2,11 +2,14 @@ public class FileReader {
   //@ ghost private int state;
   private int remaining;
 
-  //@ requires true;
+  //@ given FileTracker tracker;
+  //@ context Perm(tracker.active, 1);
   //@ ensures Perm(state, 1) ** Perm(remaining, 1) ** state == 1 ** remaining >= 0;
+  //@ ensures tracker.active == \old(tracker.active) + 1;
   public FileReader() {
     //@ ghost this.state = 1;
     this.remaining = 20;
+    //@ ghost tracker.inc();
   }
 
   //@ context Perm(state, 1) ** Perm(remaining, 1) ** remaining >= 0;
@@ -32,17 +35,23 @@ public class FileReader {
     return this.remaining == 0;
   }
 
+  //@ given FileTracker tracker;
+  //@ context Perm(tracker.active, 1);
   //@ context Perm(state, 1) ** Perm(remaining, 1) ** remaining >= 0;
   //@ requires state == 2 ** remaining == 0;
   //@ ensures state == 3;
+  //@ ensures tracker.active == \old(tracker.active) - 1;
   public void close() {
     //@ ghost this.state = 3;
+    //@ ghost tracker.dec();
   }
-  
-  //@ requires true;
-  //@ ensures true;
+
+  //@ given FileTracker tracker;
+  //@ context Perm(tracker.active, 1);
+  //@ requires tracker.active == 0;
+  //@ ensures tracker.active == 0;
   public static void main(String[] args) {
-    FileReader f = new FileReader();
+    FileReader f = new FileReader() /*@ with {tracker=tracker;} @*/;
     f.open();
     // Workaround https://github.com/utwente-fmt/vercors/issues/436
     boolean end = f.eof();
@@ -51,6 +60,6 @@ public class FileReader {
       f.read();
       end = f.eof();
     }
-    f.close();
+    f.close() /*@ with {tracker=tracker;} @*/;
   }
 }
