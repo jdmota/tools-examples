@@ -4,7 +4,7 @@ public class FileReader {
 
   //@ requires true;
   //@ ensures Perm(state, 1) ** Perm(remaining, 1) ** state == 1 ** remaining >= 0;
-  public FileReader(String filename) {
+  public FileReader() {
     //@ ghost this.state = 1;
     this.remaining = 20;
   }
@@ -39,15 +39,18 @@ public class FileReader {
     //@ ghost this.state = 3;
   }
   
-  // requires true;
-  // ensures true;
-  /*public static void main(String[] args) {
-    FileReader f = new FileReader("file.txt");
+  //@ requires true;
+  //@ ensures true;
+  public static void main(String[] args) {
+    FileReader f = new FileReader();
     f.open();
-    // loop_invariant f.filereader() ** \unfolding f.filereader() \in f.state == 2;
-    while (!f.eof()) {
+    // Workaround https://github.com/utwente-fmt/vercors/issues/436
+    boolean end = f.eof();
+    //@ loop_invariant Perm(f.state, 1) ** Perm(f.remaining, 1) ** f.state == 2 ** f.remaining >= 0 ** (end == (f.remaining == 0));
+    while (!end) {
       f.read();
+      end = f.eof();
     }
     f.close();
-  }*/
+  }
 }
