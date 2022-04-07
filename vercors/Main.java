@@ -29,34 +29,39 @@ public class Main {
   //@ context_everywhere Perm(tracker.active, 1);
   //@ requires tracker.active == |l|;
   //@ ensures tracker.active == 0;
-  //@ context list != null ** list.state(l);
+  //@ context linkedlist != null ** linkedlist.state(l);
   //@ requires (\forall* int i; i >= 0 && i < |l|; PointsTo(l[i].state, 1, 1));
   //@ ensures (\forall* int i; i >= 0 && i < |l|; PointsTo(l[i].state, 1, 3));
   //@ context (\forall* int i; i >= 0 && i < |l|; Perm(l[i].remaining, 1) ** l[i].remaining >= 0);
-  public static void useFiles(LinkedList list) {
+  public static void useFiles(LinkedList linkedlist) {
     //@ ghost seq<FileReader> seen = seq<FileReader> {};
     //@ ghost seq<FileReader> remaining = l;
-    LinkedListIterator it = list.iterator() /*@ with {list=l;} @*/;
-    //@ assert it.state(list, seen, remaining);
-    boolean has = it.hasNext() /*@ with {linkedlist=list; s=seen; r=remaining;} @*/;
-    //@ loop_invariant it != null ** it.state(list, seen, remaining) ** tracker.active == |remaining|;
+    LinkedListIterator it = linkedlist.iterator() /*@ with {list=l;} @*/;
+    //@ assert it.state(linkedlist, seen, remaining);
+    boolean has = it.hasNext() /*@ with {linkedlist=linkedlist; s=seen; r=remaining;} @*/;
+    //@ loop_invariant it != null ** it.state(linkedlist, seen, remaining) ** seen + remaining == l;
+    //@ loop_invariant tracker.active == |remaining|;
     //@ loop_invariant (\forall* int i; i >= 0 && i < |seen|; PointsTo(seen[i].state, 1, 3));
     //@ loop_invariant (\forall* int i; i >= 0 && i < |remaining|; PointsTo(remaining[i].state, 1, 1));
     //@ loop_invariant (\forall* int i; i >= 0 && i < |seen|; Perm(seen[i].remaining, 1) ** seen[i].remaining >= 0);
     //@ loop_invariant (\forall* int i; i >= 0 && i < |remaining|; Perm(remaining[i].remaining, 1) ** remaining[i].remaining >= 0);
     //@ loop_invariant has == (|remaining| > 0);
     while (has) {
-      FileReader f = it.next() /*@ with {linkedlist=list; s=seen; r=remaining;} @*/;
+      FileReader f = it.next() /*@ with {linkedlist=linkedlist; s=seen; r=remaining;} @*/;
+      //@ ghost seen = seen + seq<FileReader> { f };
+      //@ ghost remaining = tail(remaining);
       f.open();
       // Workaround https://github.com/utwente-fmt/vercors/issues/436
       boolean end = f.eof();
       //@ loop_invariant Perm(f.state, 1) ** Perm(f.remaining, 1) ** f.state == 2 ** f.remaining >= 0 ** (end == (f.remaining == 0));
+      //@ loop_invariant tracker.active == |remaining| + 1;
       while (!end) {
         f.read();
         end = f.eof();
       }
       f.close() /*@ with {tracker=tracker;} @*/;
-      has = it.hasNext() /*@ with {linkedlist=list; s=seen; r=remaining;} @*/;
+      has = it.hasNext() /*@ with {linkedlist=linkedlist; s=seen; r=remaining;} @*/;
     }
+    it.dispose() /*@ with {linkedlist=linkedlist; list=seen;} @*/;
   }
 }

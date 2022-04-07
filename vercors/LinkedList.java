@@ -218,7 +218,7 @@ public class LinkedList {
 
   //@ given seq<FileReader> list;
   //@ requires state(list);
-  //@ ensures \result.state(this, seq<FileReader> {}, list);
+  //@ ensures \result != null ** \result.state(this, seq<FileReader> {}, list);
   public LinkedListIterator iterator() {
     //@ unfold state(list);
     /*@ ghost if (h == null) {

@@ -6,6 +6,7 @@ public class LinkedListIterator {
   /*@
   final resource state(LinkedList linkedlist, seq<FileReader> s, seq<FileReader> r) =
     Perm(first, 1) ** Perm(last, 1) ** Perm(curr, 1) **
+    Perm(linkedlist.h, 1\2) ** Perm(linkedlist.t, 1\2) **
     ([1\2]linkedlist.state(s + r)) **
     ([1\2]LinkedList.nodes_until(first, curr)) **
     ([1\2]LinkedList.nodes(curr)) **
@@ -16,6 +17,7 @@ public class LinkedListIterator {
 
   //@ given LinkedList linkedlist;
   //@ given seq<FileReader> list;
+  //@ requires Perm(linkedlist.h, 1\2) ** Perm(linkedlist.t, 1\2);
   //@ requires [1\2]linkedlist.state(list);
   //@ requires ([1\2]LinkedList.nodes(h)) ** list == LinkedList.nodes_list(h);
   //@ requires \unfolding [1\2]linkedlist.state(list) \in linkedlist.h == h;
@@ -28,6 +30,23 @@ public class LinkedListIterator {
     curr = h;
     //@ fold [1\2]LinkedList.nodes_until(first, curr);
     //@ fold state(linkedlist, seq<FileReader> {}, LinkedList.nodes_list(h));
+  }
+  
+  //@ given LinkedList linkedlist;
+  //@ given seq<FileReader> list;
+  //@ requires state(linkedlist, list, seq<FileReader> {});
+  //@ ensures linkedlist.state(list);
+  public void dispose() {
+    //@ unfold state(linkedlist, list, seq<FileReader> {});
+    //@ unfold [1\2]linkedlist.state(list);
+    /*@
+    ghost if (linkedlist.h == null) {
+      fold linkedlist.state(list);
+    } else {
+      LinkedList.dispose_iterator(linkedlist.h, linkedlist.t, list);
+      fold linkedlist.state(list);
+    }
+    @*/
   }
 
   //@ given LinkedList linkedlist;
