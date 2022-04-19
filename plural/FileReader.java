@@ -2,40 +2,71 @@ import edu.cmu.cs.plural.annot.*;
 
 @Refine({
   @States(value={"init", "opened", "closed"}, refined="alive"),
-  @States(value={"eof", "notEof"}, refine="opened")
+  @States(value={"eof", "notEof"}, refined="opened")
 })
 @ClassStates({
-  @State(name="eof", inv="remaining == 0"),
-  @State(name="notEof", inv="remaining > 0")
+  @State(name="init", inv="opened == false * closed == false"),
+  @State(name="opened", inv="opened == true * closed == false"),
+  @State(name="eof", inv="remaining == false"),
+  @State(name="notEof", inv="remaining == true"),
+  @State(name="closed", inv="opened == true * closed == true")
 })
 public class FileReader {
-  private int remaining;
+  private boolean remaining;
+  private boolean opened, closed;
 
   @Perm(ensures="unique(this!fr) in init")
-  public FileReader(String filename) {
-    remaining = 20;
+  public FileReader() {
+    remaining = true;
+    opened = false;
+    closed = false;
   }
 
-  @Full(requires="init", ensures="opened")
-  public boolean open() {
-    return true;
+  @Unique(requires="init", ensures="opened", use=Use.FIELDS)
+  public void open() {
+    opened = true;
   }
 
-  @Full(requires="notEof", ensures="opened")
+  @Unique(requires="notEof", ensures="opened", use=Use.FIELDS)
   public byte read() {
-    remaining--;
+    remaining = false;
     return 0;
   }
 
-  @Imm(guarantee="opened")
+  @Imm(guarantee="opened", use=Use.FIELDS)
   @TrueIndicates("eof")
   @FalseIndicates("notEof")
   public boolean eof() {
-    return remaining == 0;
+    if (remaining == false) {
+      return true;
+    }
+    return false;
   }
 
-  @Full(requires="eof", ensures="closed")
+  @Unique(requires="eof", ensures="closed", use=Use.FIELDS)
   public void close() {
+    closed = true;
+  }
+  
+  public static void okExample() {
+    FileReader f = new FileReader();
+    f.open();
+    while (!f.eof()) {
+      f.read();
+    }
+    f.close();
+  }
+  
+  public static void notOkExample() {
+    FileReader f = new FileReader();
+    f.open();
+    while (f.eof()) {
+      f.read(); // expected error: argument this must be in state [notEof] but is in [eof]
+    }
+    f.close(); // expected error: argument this must be in state [eof] but is in [notEof]
+  }
+
+  public static void droppingObject(@Unique(requires="opened", returned=false) FileReader f) {
 
   }
 }

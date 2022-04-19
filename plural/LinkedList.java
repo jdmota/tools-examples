@@ -2,54 +2,13 @@ import edu.cmu.cs.plural.annot.*;
 
 @Similar("p")
 @Refine({
-  @States(value={"withoutValue"}, refined="alive"),
-  @States(value={"withValue"}, refined="alive")
-})
-@ClassStates({
-  @State(name="withoutValue", inv="unique(next) in withValue"),
-  @State(name="withValue", inv="unique(next) in withValue * p(value)")
-})
-class Node<T> {
-  @Apply("p")
-  private Node<T> next;
-  private T value;
-
-  @Perm(ensures="unique(this!fr) in withValue")
-  public Node(@PolyVar(value="p", returned=false) T val) {
-    value = val;
-    next = null;
-  }
-
-  @Unique(requires="alive")
-	@ResultUnique(ensures="withValue")
-	@ResultApply("p")
-  public Node<T> getNext() {
-    return next;
-  }
-
-  @Unique(requires="withValue", ensures="withValue")
-  public void setNext(
-    @Unique(requires="withValue", returned=false) @Apply("p") Node<T> n
-  ) {
-    next = n;
-  }
-
-  @Unique(requires="withValue", ensures="withoutValue")
-	@ResultPolyVar("p")
-  public T getValue() {
-    return value;
-  }
-}
-
-@Similar("p")
-@Refine({
   @States(value={"empty", "notEmpty"}, refined="alive")
 })
 @ClassStates({
   @State(name="empty", inv="head == null * tail == null"),
   @State(
     name="notEmpty",
-    inv="unique(head) in withValue * head != null * tail != null"
+    inv="unique(head) in withValue,dimNext * head != null * tail != null"
   )
 })
 public class LinkedList<T> {
@@ -64,9 +23,9 @@ public class LinkedList<T> {
     tail = null;
   }
 
-  @Unique(ensures="notEmpty")
+  @Unique(requires="alive", ensures="notEmpty", use=Use.FIELDS)
   public void add(@PolyVar(value="p", returned=false) T value) {
-    @Apply("p") Node<T> n = new Node<>(value);
+    @Apply("p") Node<T> n = new Node<T>(value);
     if (head == null) {
       head = n;
       tail = n;
@@ -76,12 +35,14 @@ public class LinkedList<T> {
     }
   }
 
-  @Unique(requires="notEmpty")
+  @Unique(requires="notEmpty", ensures="alive", use=Use.FIELDS)
   @ResultPolyVar("p")
   public T remove() {
     T result = head.getValue();
-    head = head.getNext();
-    if (head == null) {
+    if (head.hasNext()){
+      head = head.getNext();
+    } else {
+      head = null;
       tail = null;
     }
     return result;
