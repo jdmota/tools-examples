@@ -1,13 +1,12 @@
 /*@
-predicate filereader(FileReader file; int state, int remaining) =
-  file.state |-> state &*& file.remaining |-> remaining &*& remaining >= 0;
+predicate filereader(FileReader file; int s, int r) =
+  file.state |-> s &*& file.remaining |-> r &*& r >= 0;
 @*/
 
 public class FileReader {
   public static final int STATE_INIT = 1;
   public static final int STATE_OPENED = 2;
-  public static final int STATE_EOF = 3;
-  public static final int STATE_CLOSED = 4;
+  public static final int STATE_CLOSED = 3;
 
   private int state;
   private int remaining;
