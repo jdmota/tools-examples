@@ -9,13 +9,16 @@ public class Main {
     FileReader f1 = new FileReader() /*@ with {tracker=tracker;} @*/;
     FileReader f2 = new FileReader() /*@ with {tracker=tracker;} @*/;
     FileReader f3 = new FileReader() /*@ with {tracker=tracker;} @*/;
+    //@ assert f1 != f2 && f2 != f3 && f1 != f3;
+    //@ fold filereader(f1, 1);
+    //@ fold filereader(f2, 1);
+    //@ fold filereader(f3, 1);
     list.add(f1) /*@ with {oldList=l;} then {l=newList;} @*/;
     list.add(f2) /*@ with {oldList=l;} then {l=newList;} @*/;
     list.add(f3) /*@ with {oldList=l;} then {l=newList;} @*/;
     //@ assert l == seq<FileReader> {f1, f2, f3};
     //@ assert |l| == 3;
-    //@ assert (\forall* int i; i >= 0 && i < |l|; PointsTo(l[i].state, 1, 1));
-    //@ assert (\forall* int i; i >= 0 && i < |l|; Perm(l[i].remaining, 1) ** l[i].remaining >= 0);
+    //@ assert (\forall* int i; i >= 0 && i < |l|; filereader(l[i], 1));
     useFiles(list) /*@ with {tracker=tracker; l=l;} @*/;
   }
 
@@ -30,9 +33,8 @@ public class Main {
   //@ requires tracker.active == |l|;
   //@ ensures tracker.active == 0;
   //@ context linkedlist != null ** linkedlist.state(l);
-  //@ requires (\forall* int i; i >= 0 && i < |l|; PointsTo(l[i].state, 1, 1));
-  //@ ensures (\forall* int i; i >= 0 && i < |l|; PointsTo(l[i].state, 1, 3));
-  //@ context (\forall* int i; i >= 0 && i < |l|; Perm(l[i].remaining, 1) ** l[i].remaining >= 0);
+  //@ requires (\forall* int i; i >= 0 && i < |l|; filereader(l[i], 1));
+  //@ ensures (\forall* int i; i >= 0 && i < |l|; filereader(l[i], 3));
   public static void useFiles(LinkedList linkedlist) {
     //@ ghost seq<FileReader> seen = seq<FileReader> {};
     //@ ghost seq<FileReader> remaining = l;
@@ -41,15 +43,14 @@ public class Main {
     boolean has = it.hasNext() /*@ with {linkedlist=linkedlist; s=seen; r=remaining;} @*/;
     //@ loop_invariant it != null ** it.state(linkedlist, seen, remaining) ** seen + remaining == l;
     //@ loop_invariant tracker.active == |remaining|;
-    //@ loop_invariant (\forall* int i; i >= 0 && i < |seen|; PointsTo(seen[i].state, 1, 3));
-    //@ loop_invariant (\forall* int i; i >= 0 && i < |remaining|; PointsTo(remaining[i].state, 1, 1));
-    //@ loop_invariant (\forall* int i; i >= 0 && i < |seen|; Perm(seen[i].remaining, 1) ** seen[i].remaining >= 0);
-    //@ loop_invariant (\forall* int i; i >= 0 && i < |remaining|; Perm(remaining[i].remaining, 1) ** remaining[i].remaining >= 0);
     //@ loop_invariant has == (|remaining| > 0);
+    //@ loop_invariant (\forall* int i; i >= 0 && i < |seen|; filereader(seen[i], 3));
+    //@ loop_invariant (\forall* int i; i >= 0 && i < |remaining|; filereader(remaining[i], 1));
     while (has) {
       FileReader f = it.next() /*@ with {linkedlist=linkedlist; s=seen; r=remaining;} @*/;
       //@ ghost seen = seen + seq<FileReader> { f };
       //@ ghost remaining = tail(remaining);
+      //@ unfold filereader(f, 1);
       f.open();
       // Workaround https://github.com/utwente-fmt/vercors/issues/436
       boolean end = f.eof();
@@ -60,6 +61,7 @@ public class Main {
         end = f.eof();
       }
       f.close() /*@ with {tracker=tracker;} @*/;
+      //@ fold filereader(f, 3);
       has = it.hasNext() /*@ with {linkedlist=linkedlist; s=seen; r=remaining;} @*/;
     }
     it.dispose() /*@ with {linkedlist=linkedlist; list=seen;} @*/;
