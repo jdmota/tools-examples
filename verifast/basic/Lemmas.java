@@ -164,4 +164,63 @@ lemma void dispose_iterator(LinkedListIterator it)
     dispose_iterator_2(h, t);
   }
 }
+
+lemma void empty_seq(Node n)
+  requires lseg(n, n, ?l);
+  ensures lseg(n, n, l) &*& l == nil;
+{
+  open lseg(n, n, l);
+  close lseg(n, n, l);
+}
+
+lemma void lseg_concat(Node n1, Node n2, Node n3)
+  requires lseg(n1, n2, ?a) &*& lseg(n2, n3, ?b) &*& node(n3, ?n4, ?v);
+  ensures lseg(n1, n3, append(a, b)) &*& node(n3, n4, v);
+{
+  open lseg(n1, n2, a);
+  if (n1 == n2) {
+
+  } else {
+    open node(n1, ?next, _);
+    distinct_nodes(n1, n3);
+    lseg_concat(next, n2, n3);
+    close lseg(n1, n3, append(a, b));
+  }
+}
+
+lemma void append_inversion<t>(list<t> seg, t value)
+  requires true;
+  ensures take(length(append(seg, cons(value, nil))) - 1, append(seg, cons(value, nil))) == seg &*&
+          drop(length(append(seg, cons(value, nil))) - 1, append(seg, cons(value, nil))) == cons(value, nil) &*&
+          nth(length(append(seg, cons(value, nil))) - 1, append(seg, cons(value, nil))) == value;
+{
+  switch (seg) {
+    case nil: assert true;
+    case cons(x, xs): {
+      append_inversion(xs, value);
+      length_append(xs, cons(value, nil));
+    }
+  }
+}
+
+lemma void append_take_drop_2_aux<t>(list<t> xs)
+  requires true;
+  ensures append(take(length(xs), xs), drop(length(xs), xs)) == xs;
+{
+  switch (xs) {
+    case nil: assert true;
+    case cons(x, tail): append_take_drop_2_aux(tail);
+  }
+}
+
+lemma void append_take_drop_2<t>(int n, list<t> xs)
+  requires 0 <= n && n <= length(xs);
+  ensures append(take(n, xs), drop(n, xs)) == xs;
+{
+  if (n == length(xs)) {
+    append_take_drop_2_aux(xs);
+  } else {
+    append_take_drop(n, xs);
+  }
+}
 @*/
