@@ -173,6 +173,19 @@ lemma void empty_seq(Node n)
   close lseg(n, n, l);
 }
 
+lemma void lseg_start_non_null(Node n1, Node n2)
+  requires lseg(n1, n2, ?a) &*& n2 != null;
+  ensures lseg(n1, n2, a) &*& n1 != null &*& n2 != null;
+{
+  open lseg(n1, n2, a);
+  if (n1 == n2) {
+
+  } else {
+    open node(n1, ?next, _);
+    lseg_start_non_null(next, n2);
+  }
+}
+
 lemma void lseg_concat(Node n1, Node n2, Node n3)
   requires lseg(n1, n2, ?a) &*& lseg(n2, n3, ?b) &*& node(n3, ?n4, ?v);
   ensures lseg(n1, n3, append(a, b)) &*& node(n3, n4, v);
@@ -222,5 +235,18 @@ lemma void append_take_drop_2<t>(int n, list<t> xs)
   } else {
     append_take_drop(n, xs);
   }
+}
+
+lemma void complex_append<t>(t oldHeadVal, list<t> a, list<t> b, t tailVal)
+  requires length(b) > 0;
+  ensures append(cons(oldHeadVal, reverse(a)), append(b, cons(tailVal, nil))) == append(cons(oldHeadVal, reverse(cons(head(b), a))), append(tail(b), cons(tailVal, nil)));
+{
+  append_assoc(cons(oldHeadVal, reverse(a)), b, cons(tailVal, nil));
+  append_assoc(cons(oldHeadVal, reverse(a)), cons(head(b), nil), append(tail(b), cons(tailVal, nil)));
+  switch (b) {
+    case nil: assert false;
+    case cons(x, xs0): assert b == cons(head(b), tail(b));
+  }
+  assert b == append(cons(head(b), nil), tail(b));
 }
 @*/

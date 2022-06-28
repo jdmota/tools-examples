@@ -241,4 +241,92 @@ public class LinkedList {
       //@ assert (append(cons(f, pt), cons(tv, nil)) == cons(f, drop(index, list)));
     }
   }
+
+  public void reverse()
+    //@ requires llist(this, _, _, ?list);
+    //@ ensures llist(this, _, _, reverse(list));
+  {
+    //@ open llist(this, ?h, ?t, list);
+    if (head == tail) {
+      /*@
+      if (head != null) {
+        open lseg(h, t, _);
+      }
+      @*/
+      return;
+    }
+    
+    Node oldHead = head;
+    Node curr = head;
+    Node prev = null;
+    while (curr != null)
+      /*@ invariant
+            (
+              prev == null ?
+                (
+                  curr == null ?
+                    (list == nil) :
+                    (
+                      oldHead == curr &*&
+                      curr != prev &*&
+                      lseg(curr, t, ?b) &*& node(t, null, ?tailVal) &*&
+                      list == append(b, cons(tailVal, nil)) &*& list != nil
+                    )
+                ) :
+                (
+                  curr == null ?
+                    (
+                      curr != prev &*&
+                      lseg(prev, oldHead, ?a) &*& node(oldHead, null, ?oldHeadVal) &*&
+                      list == cons(oldHeadVal, reverse(a)) &*& list != nil
+                    ) :
+                    (
+                      curr != prev &*&
+                      lseg(prev, oldHead, ?a) &*& node(oldHead, null, ?oldHeadVal) &*&
+                      lseg(curr, t, ?b) &*& node(t, null, ?tailVal) &*&
+                      list == append(cons(oldHeadVal, reverse(a)), append(b, cons(tailVal, nil))) &*& list != nil
+                    )
+                )
+            );
+      @*/
+    {
+      //@ open lseg(curr, t, ?b);
+      //@ open node(curr, ?currNext, ?currVal);
+      Node next = curr.next;
+      curr.next = prev;
+      //@ close node(curr, prev, currVal);
+      /*@
+      if (curr != t) {
+        lseg_start_non_null(currNext, t);
+        assert currNext != null;
+        open lseg(currNext, t, ?tmp);
+        distinct_nodes(curr, currNext);
+        close lseg(currNext, t, tmp);
+      }
+      @*/
+      /*@
+      if (curr == oldHead) {
+        if (prev != null) {
+          distinct_nodes(curr, oldHead);
+          assert false;
+        }
+      } else {
+        assert node(oldHead, null, ?oldHeadVal);
+        assert lseg(prev, oldHead, ?a);
+        close lseg(curr, oldHead, ?a2);
+        if (currNext != null) {
+          assert node(t, null, ?tailVal);
+          complex_append(oldHeadVal, a, b, tailVal);
+        }
+      }
+      @*/
+      prev = curr;
+      curr = next;
+    }
+    head = prev;
+    tail = oldHead;
+    //@ assert lseg(prev, oldHead, ?l);
+    //@ assert node(oldHead, null, ?oldHeadVal);
+    //@ append_cons_not_nil(l, oldHeadVal, nil);
+  }
 }
