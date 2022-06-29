@@ -102,13 +102,11 @@ public class LinkedList {
       Node newNode = new Node();
       newNode.value = f;
       newNode.next = head;
-      //@ close node(newNode, head, f);
       if (head == null) {
         head = newNode;
         tail = newNode;
       } else {
         //@ open lseg(h, t, ?ht);
-        //@ distinct_nodes(newNode, h);
         //@ distinct_nodes(newNode, t);
         //@ close lseg(h, t, ht);
         //@ close lseg(newNode, t, cons(f, ht));
@@ -117,7 +115,6 @@ public class LinkedList {
       return;
     }
 
-    //@ assert 0 < index;
     //@ assert lseg(h, t, ?ht);
     //@ assert node(t, null, ?tv);
     //@ append_inversion(ht, tv);
@@ -126,30 +123,13 @@ public class LinkedList {
 
     /*@
     if (prev == t) {
-      assert h == t;
       empty_seq(h);
-      assert node(t, null, tv);
-      assert list == append(nil, cons(tv, nil));
-      assert list == cons(tv, nil);
-      assert lseg(h, t, nil) &*&
-        node(t, null, tv) &*&
-        take(0, list) == nil &*&
-        nth(0, list) == tv &*&
-        drop(1, list) == nil;
-    } else {
-      assert lseg(h, prev, ?l1) &*&
-        node(prev, ?prevnext, ?pv) &*&
-        lseg(prevnext, t, ?l2) &*&
-        node(t, null, ?v) &*&
-        take(0, list) == l1 &*&
-        nth(0, list) == pv &*&
-        drop(1, list) == append(l2, cons(v, nil));
     }
     @*/
 
     int i = 1;
     while (i < index)
-      /*@ invariant 1 <= i &*& i <= index &*& head |-> h &*& tail |-> t &*& h != null &*& t != null &*& prev != null &*&
+      /*@ invariant 1 <= i &*& i <= index &*& h != null &*& t != null &*& prev != null &*&
             (prev == t ?
               (
                 lseg(h, t, ht) &*&
@@ -176,13 +156,11 @@ public class LinkedList {
       Node nextPrev = prev.next;
       /*@
       if (nextPrev == null) {
-        if (prev == t) {
-          assert false;
-        } else {
+        if (prev != t) {
           open lseg(nextPrev, _, _);
           open node(nextPrev, _, _);
-          assert false;
         }
+        assert false;
       }
       @*/
       /*@
@@ -190,9 +168,7 @@ public class LinkedList {
         empty_seq(nextPrev);
         close node(prev, nextPrev, ?pv);
         add_lemma(h, prev, nextPrev);
-        assert length(drop(i, list)) == 1;
         length_drop(i, list);
-        assert i + 1 == length(list);
         take_one_more(i - 1, list);
       } else {
         close node(prev, nextPrev, ?pv);
@@ -208,19 +184,13 @@ public class LinkedList {
     Node newNode = new Node();
     newNode.value = f;
     if (prev == tail) {
-      //@ assert lseg(h, t, ht);
       //@ close node(newNode, null, f);
       //@ open node(t, null, tv);
       tail.next = newNode;
       //@ close node(t, newNode, tv);
       //@ add_lemma(h, t, newNode);
       tail = newNode;
-      //@ assert index == length(list);
-      //@ assert take(index, list) == list;
-      //@ assert take(index - 1, list) == ht;
       //@ drop_n_plus_one(i - 1, list);
-      //@ assert drop(index - 1, list) == cons(tv, nil);
-      //@ assert list == append(ht, cons(tv, nil));
     } else {
       //@ open lseg(h, prev, ?hp);
       //@ distinct_nodes(newNode, h);
@@ -237,8 +207,6 @@ public class LinkedList {
       //@ lseg_concat(h, newNode, t);
       //@ append_assoc(append(hp, cons(pv, nil)), cons(f, pt), cons(tv, nil));
       //@ take_one_more(index - 1, list);
-      //@ assert (append(hp, cons(pv, nil)) == take(index, list));
-      //@ assert (append(cons(f, pt), cons(tv, nil)) == cons(f, drop(index, list)));
     }
   }
 
@@ -265,7 +233,7 @@ public class LinkedList {
               prev == null ?
                 (
                   curr == null ?
-                    (list == nil) :
+                    false :
                     (
                       oldHead == curr &*&
                       curr != prev &*&
@@ -298,7 +266,6 @@ public class LinkedList {
       /*@
       if (curr != t) {
         lseg_start_non_null(currNext, t);
-        assert currNext != null;
         open lseg(currNext, t, ?tmp);
         distinct_nodes(curr, currNext);
         close lseg(currNext, t, tmp);
@@ -316,7 +283,7 @@ public class LinkedList {
         close lseg(curr, oldHead, ?a2);
         if (currNext != null) {
           assert node(t, null, ?tailVal);
-          complex_append(oldHeadVal, a, b, tailVal);
+          move_node_right_left(oldHeadVal, a, b, tailVal);
         }
       }
       @*/
