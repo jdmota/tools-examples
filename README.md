@@ -6,7 +6,7 @@ In this set of examples, we present implementations of file readers, with usage 
 
 The purpose of these examples is to evaluate if it is possible to statically guarantee protocol compliance, as well as protocol completion, even when the file readers are shared in linked-lists, and evaluate the programmer's effort in making the code acceptable to object-oriented static verification tools.
 
-A detailed analysis of VeriFast, VerCors, Plural, and KeY, is available on arXiv: [https://arxiv.org/abs/2209.05136](https://arxiv.org/abs/2209.05136).
+A detailed analysis of VeriFast, VerCors, Plural, and KeY, is available [online](https://drive.google.com/file/d/1WcnfqXGYjIYj-Yjpt-fkem-zwmoUbjfe/view).
 
 This work is licensed under a
 [Creative Commons Attribution 4.0 International License](https://creativecommons.org/licenses/by/4.0/).
