@@ -28,51 +28,51 @@ public class LinkedList {
   static pure Node get_last(Node n) =
     \unfolding [1\2]nodes(n) \in (n == null || n.next == null ? n : get_last(n.next));
 
-  requires ([1\2]nodes_until(h, t)) ** PointsTo(t.next, 1\2, null) ** Perm(t.value, 1\2);
-  requires list == nodes_until_list(h, t) + seq<FileReader> { t.value };
-  ensures [1\2]nodes(h);
-  ensures list == nodes_list(h);
-  ghost static void prepare_iterator(Node h, Node t, seq<FileReader> list) {
-    if (h == t) {
-      fold [1\2]nodes(h.next);
-      fold [1\2]nodes(h);
+  requires ([1\2]nodes_until(hd, tl)) ** PointsTo(tl.next, 1\2, null) ** Perm(tl.value, 1\2);
+  requires list == nodes_until_list(hd, tl) + seq<FileReader> { tl.value };
+  ensures [1\2]nodes(hd);
+  ensures list == nodes_list(hd);
+  ghost static void prepare_iterator(Node hd, Node tl, seq<FileReader> list) {
+    if (hd == tl) {
+      fold [1\2]nodes(hd.next);
+      fold [1\2]nodes(hd);
     } else {
-      unfold [1\2]nodes_until(h, t);
-      prepare_iterator(h.next, t, tail(list));
-      fold [1\2]nodes(h);
+      unfold [1\2]nodes_until(hd, tl);
+      prepare_iterator(hd.next, tl, tail(list));
+      fold [1\2]nodes(hd);
     }
   }
 
-  requires ([1\2]nodes_until(h, t)) ** PointsTo(t.next, 1\2, null) ** Perm(t.value, 1\2);
-  requires list == nodes_until_list(h, t) + seq<FileReader> { t.value };
-  requires [1\2]nodes_until(h, null);
-  requires list == nodes_until_list(h, null);
-  ensures nodes_until(h, t) ** PointsTo(t.next, 1, null) ** Perm(t.value, 1);
-  ensures list == nodes_until_list(h, t) + seq<FileReader> { t.value };
-  ghost static void dispose_iterator(Node h, Node t, seq<FileReader> list) {
-    if (h == t) {
-      unfold [1\2]nodes_until(h, t);
-      unfold [1\2]nodes_until(h, null);
-      fold nodes_until(h, t);
+  requires ([1\2]nodes_until(hd, tl)) ** PointsTo(tl.next, 1\2, null) ** Perm(tl.value, 1\2);
+  requires list == nodes_until_list(hd, tl) + seq<FileReader> { tl.value };
+  requires [1\2]nodes_until(hd, null);
+  requires list == nodes_until_list(hd, null);
+  ensures nodes_until(hd, tl) ** PointsTo(tl.next, 1, null) ** Perm(tl.value, 1);
+  ensures list == nodes_until_list(hd, tl) + seq<FileReader> { tl.value };
+  ghost static void dispose_iterator(Node hd, Node tl, seq<FileReader> list) {
+    if (hd == tl) {
+      unfold [1\2]nodes_until(hd, tl);
+      unfold [1\2]nodes_until(hd, null);
+      fold nodes_until(hd, tl);
     } else {
-      unfold [1\2]nodes_until(h, t);
-      unfold [1\2]nodes_until(h, null);
-      dispose_iterator(h.next, t, tail(list));
-      fold nodes_until(h, t);
+      unfold [1\2]nodes_until(hd, tl);
+      unfold [1\2]nodes_until(hd, null);
+      dispose_iterator(hd.next, tl, tail(list));
+      fold nodes_until(hd, tl);
     }
   }
   @*/
 
   /*@
   final resource state(seq<FileReader> list) =
-    Perm(h, 1) ** Perm(t, 1) **
+    Perm(hd, 1) ** Perm(tl, 1) **
     (
-      h == null ? (t == null ** list == seq<FileReader> {}) :
+      hd == null ? (tl == null ** list == seq<FileReader> {}) :
         (
-          t == null ? (h == null ** list == seq<FileReader> {}) :
+          tl == null ? (hd == null ** list == seq<FileReader> {}) :
             (
-              nodes_until(h, t) ** PointsTo(t.next, 1, null) ** Perm(t.value, 1) **
-              list == (nodes_until_list(h, t) + seq<FileReader> { t.value })
+              nodes_until(hd, tl) ** PointsTo(tl.next, 1, null) ** Perm(tl.value, 1) **
+              list == (nodes_until_list(hd, tl) + seq<FileReader> { tl.value })
             )
         )
     );
@@ -142,15 +142,15 @@ public class LinkedList {
   }
   @*/
 
-  private Node h;
-  private Node t;
+  private Node hd;
+  private Node tl;
   
   //@ yields seq<FileReader> newList;
   //@ requires true;
   //@ ensures state(newList) ** newList == seq<FileReader> {};
   public LinkedList() {
-    h = null;
-    t = null;
+    hd = null;
+    tl = null;
     //@ ghost newList = seq<FileReader> {};
     //@ fold state(newList);
   }
@@ -164,18 +164,18 @@ public class LinkedList {
     Node n = new Node();
     n.value = x;
     n.next = null;
-    if (h == null) {
-      h = n;
-      t = n;
+    if (hd == null) {
+      hd = n;
+      tl = n;
       //@ ghost newList = oldList + seq<FileReader> { x };
-      //@ fold nodes_until(h, t);
+      //@ fold nodes_until(hd, tl);
       //@ fold state(newList);
     } else {
-      t.next = n;
-      //@ ghost add_lemma(h, t, n, oldList);
-      t = n;
+      tl.next = n;
+      //@ ghost add_lemma(hd, tl, n, oldList);
+      tl = n;
       //@ ghost newList = oldList + seq<FileReader> { x };
-      //@ assert newList == nodes_until_list(h, t) + seq<FileReader> { t.value };
+      //@ assert newList == nodes_until_list(hd, tl) + seq<FileReader> { tl.value };
       //@ fold state(newList);
     }
   }
@@ -186,20 +186,20 @@ public class LinkedList {
   //@ ensures state(newList) ** newList == tail(oldList);
   public FileReader remove() {
     //@ unfold state(oldList);
-    //@ unfold nodes_until(h, t);
-    FileReader result = h.value;
-    if (h == t) {
-      h = null;
-      t = null;
+    //@ unfold nodes_until(hd, tl);
+    FileReader result = hd.value;
+    if (hd == tl) {
+      hd = null;
+      tl = null;
       //@ ghost newList = tail(oldList);
       //@ fold state(newList);
     } else {
-      //@ assert nodes_until(h.next, t);
-      //@ unfold nodes_until(h.next, t);
-      //@ assert h.next != null;
-      //@ fold nodes_until(h.next, t);
-      h = h.next;
-      //@ assert nodes_until(h, t);
+      //@ assert nodes_until(hd.next, tl);
+      //@ unfold nodes_until(hd.next, tl);
+      //@ assert hd.next != null;
+      //@ fold nodes_until(hd.next, tl);
+      hd = hd.next;
+      //@ assert nodes_until(hd, tl);
       //@ ghost newList = tail(oldList);
       //@ fold state(newList);
     }
@@ -211,7 +211,7 @@ public class LinkedList {
   //@ ensures state(oldList) ** \result == (|oldList| == 0);
   public boolean isEmpty() {
     //@ unfold state(oldList);
-    boolean r = h == null;
+    boolean r = hd == null;
     //@ fold state(oldList);
     return r;
   }
@@ -221,13 +221,13 @@ public class LinkedList {
   //@ ensures \result != null ** \result.state(this, seq<FileReader> {}, list);
   public LinkedListIterator iterator() {
     //@ unfold state(list);
-    /*@ ghost if (h == null) {
-      fold [1\2]nodes(h);
+    /*@ ghost if (hd == null) {
+      fold [1\2]nodes(hd);
     } else {
-      prepare_iterator(h, t, list);
+      prepare_iterator(hd, tl, list);
     }
     @*/
     //@ fold [1\2]state(list);
-    return new LinkedListIterator(h) /*@ with {linkedlist=this; list=list;} @*/;
+    return new LinkedListIterator(hd) /*@ with {linkedlist=this; list=list;} @*/;
   }
 }
