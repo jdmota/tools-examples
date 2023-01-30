@@ -208,10 +208,10 @@ public class LinkedList {
 
   //@ given seq<FileReader> oldList;
   //@ requires state(oldList);
-  //@ ensures state(oldList) ** \result == |oldList| > 0;
-  public boolean notEmpty() {
+  //@ ensures state(oldList) ** \result == (|oldList| == 0);
+  public boolean isEmpty() {
     //@ unfold state(oldList);
-    boolean r = h != null;
+    boolean r = h == null;
     //@ fold state(oldList);
     return r;
   }

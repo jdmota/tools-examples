@@ -76,16 +76,16 @@ public class LinkedList {
     }
     return result;
   }
-  
-  public boolean notEmpty()
+
+  public boolean isEmpty()
     //@ requires llist(this, _, _, ?list);
-    //@ ensures llist(this, _, _, list) &*& (result == (list != nil));
+    //@ ensures llist(this, _, _, list) &*& (result == (list == nil));
   {
     //@ open llist(_, _, _, _);
-    return head != null;
+    return head == null;
     //@ close llist(_, _, _, _);
   }
-  
+
   public LinkedListIterator iterator()
     //@ requires llist(this, ?h, _, ?list);
     //@ ensures iterator(this, result, h, list, nil, list) &*& result != null;

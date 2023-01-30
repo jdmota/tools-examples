@@ -47,4 +47,14 @@ public class LinkedList<T> {
     }
     return result;
   }
+
+  @Imm(guarantee="alive", use=Use.FIELDS)
+  @TrueIndicates("empty")
+  @FalseIndicates("notEmpty")
+  public boolean isEmpty() {
+    if (head == null && tail == null) {
+      return true;
+    }
+    return false;
+  }
 }

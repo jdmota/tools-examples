@@ -93,6 +93,14 @@ public final class LinkedList {
 
   /*@
     @ normal_behavior
+    @ ensures \result == (values == \seq_empty);
+    @*/
+  public /*@ pure */ boolean isEmpty() {
+    return this.head == null;
+  }
+
+  /*@
+    @ normal_behavior
     @ assignable \nothing;
     @ ensures \invariant_for(\result);
     @ ensures \fresh(\result) && \fresh(\result.footprint);
