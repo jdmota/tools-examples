@@ -2,7 +2,7 @@
 
 \settings {
 "#Proof-Settings-Config-File
-#Thu Jun 16 17:24:02 BST 2022
+#Sun Feb 05 16:49:20 GMT 2023
 [NewSMT]NoTypeHierarchy=false
 [Labels]UseOriginLabels=true
 [StrategyProperty]QUERYAXIOM_OPTIONS_KEY=QUERYAXIOM_ON
@@ -22,9 +22,9 @@
 [SMTSettings]SelectedTaclets=
 [StrategyProperty]DEP_OPTIONS_KEY=DEP_ON
 [StrategyProperty]AUTO_INDUCTION_OPTIONS_KEY=AUTO_INDUCTION_OFF
-[Strategy]MaximumNumberOfAutomaticApplications=10000
+[Strategy]MaximumNumberOfAutomaticApplications=1000
 [StrategyProperty]STOPMODE_OPTIONS_KEY=STOPMODE_DEFAULT
-[StrategyProperty]CLASS_AXIOM_OPTIONS_KEY=CLASS_AXIOM_FREE
+[StrategyProperty]CLASS_AXIOM_OPTIONS_KEY=CLASS_AXIOM_DELAYED
 [SMTSettings]useConstantsForBigOrSmallIntegers=true
 [StrategyProperty]MPS_OPTIONS_KEY=MPS_MERGE
 [StrategyProperty]SYMBOLIC_EXECUTION_NON_EXECUTION_BRANCH_HIDING_OPTIONS_KEY=SYMBOLIC_EXECUTION_NON_EXECUTION_BRANCH_HIDING_OFF
@@ -49,19 +49,19 @@
 \javaSource "..";
 
 \proofObligation "#Proof Obligation Settings
-#Thu Jun 16 17:24:02 BST 2022
+#Sun Feb 05 16:49:20 GMT 2023
 contract=FileReader[FileReader\\:\\:$footprint()].JML accessible clause.0
 name=FileReader[FileReader\\:\\:$footprint()].JML accessible clause.0
 class=de.uka.ilkd.key.proof.init.DependencyContractPO
 ";
 
 \proof {
-(keyLog "0" (keyUser "JOTA" ) (keyVersion "666bcb0c95"))
+(keyLog "0" (keyUser "jdmota" ) (keyVersion "666bcb0c95"))
 
-(autoModeTime "30")
+(autoModeTime "12")
 
 (branch "dummy ID"
- (builtin "One Step Simplification" (formula "1") (newnames "self_181,anon_heap"))
+ (builtin "One Step Simplification" (formula "1") (newnames "self_155,anon_heap"))
 (rule "impRight" (formula "1"))
 (rule "andLeft" (formula "1"))
 (rule "andLeft" (formula "1"))

@@ -17,16 +17,15 @@ public class FileReader {
     //@ ensures tracker(n + 1) &*& filereader(this, STATE_INIT, _);
   {
     this.state = STATE_INIT;
-    this.remaining = 20;
     //@ increment_tracker();
   }
 
-  public boolean open()
+  public void open()
     //@ requires filereader(this, STATE_INIT, _);
     //@ ensures filereader(this, STATE_OPENED, _);
   {
+    this.remaining = 20;
     this.state = STATE_OPENED;
-    return true;
   }
 
   public byte read()

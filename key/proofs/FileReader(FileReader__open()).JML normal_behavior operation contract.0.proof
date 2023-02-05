@@ -2,7 +2,7 @@
 
 \settings {
 "#Proof-Settings-Config-File
-#Mon Jun 13 22:20:18 BST 2022
+#Sun Feb 05 16:17:52 GMT 2023
 [NewSMT]NoTypeHierarchy=false
 [Labels]UseOriginLabels=true
 [StrategyProperty]QUERYAXIOM_OPTIONS_KEY=QUERYAXIOM_ON
@@ -22,7 +22,7 @@
 [SMTSettings]SelectedTaclets=
 [StrategyProperty]DEP_OPTIONS_KEY=DEP_ON
 [StrategyProperty]AUTO_INDUCTION_OPTIONS_KEY=AUTO_INDUCTION_OFF
-[Strategy]MaximumNumberOfAutomaticApplications=1000
+[Strategy]MaximumNumberOfAutomaticApplications=10000
 [StrategyProperty]STOPMODE_OPTIONS_KEY=STOPMODE_DEFAULT
 [StrategyProperty]CLASS_AXIOM_OPTIONS_KEY=CLASS_AXIOM_DELAYED
 [SMTSettings]useConstantsForBigOrSmallIntegers=true
@@ -32,7 +32,7 @@
 [StrategyProperty]SYMBOLIC_EXECUTION_ALIAS_CHECK_OPTIONS_KEY=SYMBOLIC_EXECUTION_ALIAS_CHECK_NEVER
 [StrategyProperty]QUERY_NEW_OPTIONS_KEY=QUERY_OFF
 [SMTSettings]useUninterpretedMultiplication=true
-[StrategyProperty]BLOCK_OPTIONS_KEY=BLOCK_CONTRACT_INTERNAL
+[StrategyProperty]BLOCK_OPTIONS_KEY=BLOCK_CONTRACT_EXTERNAL
 [StrategyProperty]METHOD_OPTIONS_KEY=METHOD_CONTRACT
 [StrategyProperty]USER_TACLETS_OPTIONS_KEY3=USER_TACLETS_OFF
 [NewSMT]identifier=OPEN
@@ -49,16 +49,16 @@
 \javaSource "..";
 
 \proofObligation "#Proof Obligation Settings
-#Mon Jun 13 22:20:18 BST 2022
+#Sun Feb 05 16:17:52 GMT 2023
 contract=FileReader[FileReader\\:\\:open()].JML normal_behavior operation contract.0
 name=FileReader[FileReader\\:\\:open()].JML normal_behavior operation contract.0
 class=de.uka.ilkd.key.proof.init.FunctionalOperationContractPO
 ";
 
 \proof {
-(keyLog "0" (keyUser "JOTA" ) (keyVersion "666bcb0c95"))
+(keyLog "0" (keyUser "jdmota" ) (keyVersion "666bcb0c95"))
 
-(autoModeTime "94")
+(autoModeTime "93")
 
 (branch "dummy ID"
  (builtin "One Step Simplification" (formula "1") (newnames "heapAtPre_0,o,f"))
@@ -83,6 +83,7 @@ class=de.uka.ilkd.key.proof.init.FunctionalOperationContractPO
 (rule "emptyModality" (formula "8") (term "1"))
  (builtin "One Step Simplification" (formula "8"))
 (rule "eqSymm" (formula "8") (term "1,0,0,1"))
+(rule "dismissNonSelectedField" (formula "8") (term "0,1,0,0,0,0,0,1,0"))
 (rule "pullOutSelect" (formula "8") (term "0,0,0") (inst "selectSK=FileReader_state_0"))
 (rule "simplifySelectOfStore" (formula "1"))
  (builtin "One Step Simplification" (formula "1"))
@@ -91,27 +92,43 @@ class=de.uka.ilkd.key.proof.init.FunctionalOperationContractPO
  (builtin "One Step Simplification" (formula "9"))
 (rule "hideAuxiliaryEq" (formula "1"))
 (rule "Class_invariant_axiom_for_FileReader" (formula "6"))
-(rule "Class_invariant_axiom_for_FileReader" (formula "8") (term "0"))
-(rule "dismissNonSelectedField" (formula "8") (term "0,0"))
-(rule "replace_known_left" (formula "8") (term "0") (ifseqformula "6"))
+(rule "JML_represents_clause_for_FileReader_footprint" (formula "8") (term "2,0,0,0,0,1"))
+(rule "elementOfUnion" (formula "8") (term "0,0,0,0,1"))
+(rule "elementOfSingleton" (formula "8") (term "0,0,0,0,0,1"))
+(rule "elementOfSingleton" (formula "8") (term "1,0,0,0,0,1"))
+(rule "Class_invariant_axiom_for_FileReader" (formula "8") (term "1,0"))
+(rule "dismissNonSelectedField" (formula "8") (term "0,1,0"))
+(rule "replace_known_left" (formula "8") (term "1,0") (ifseqformula "6"))
  (builtin "One Step Simplification" (formula "8"))
-(rule "allRight" (formula "8") (inst "sk=f_0"))
-(rule "allRight" (formula "8") (inst "sk=o_0"))
-(rule "orRight" (formula "8"))
-(rule "orRight" (formula "8"))
-(rule "pullOutSelect" (formula "10") (term "0") (inst "selectSK=f_0_0"))
-(rule "simplifySelectOfStore" (formula "1"))
- (builtin "One Step Simplification" (formula "1"))
-(rule "castDel" (formula "1") (term "1,0"))
-(rule "eqSymm" (formula "11"))
-(rule "eqSymm" (formula "1") (term "1,0,0"))
-(rule "eqSymm" (formula "1") (term "0,0,0"))
-(rule "JML_represents_clause_for_FileReader_footprint" (formula "9") (term "2"))
-(rule "elementOfUnion" (formula "9"))
-(rule "orRight" (formula "9"))
-(rule "elementOfSingleton" (formula "9"))
-(rule "replace_known_right" (formula "1") (term "0,0") (ifseqformula "9"))
- (builtin "One Step Simplification" (formula "1") (ifInst ""  (formula "12")))
-(rule "closeFalse" (formula "1"))
+(rule "andRight" (formula "8"))
+(branch "Case 1"
+   (rule "notRight" (formula "8"))
+   (rule "exLeft" (formula "1") (inst "sk=f_0"))
+   (rule "andLeft" (formula "1"))
+   (rule "andLeft" (formula "2"))
+   (rule "andLeft" (formula "1"))
+   (rule "notLeft" (formula "3"))
+   (rule "notLeft" (formula "2"))
+   (rule "replace_known_right" (formula "1") (term "0") (ifseqformula "9"))
+    (builtin "One Step Simplification" (formula "1") (ifInst ""  (formula "8")))
+   (rule "closeFalse" (formula "1"))
+)
+(branch "Case 2"
+   (rule "allRight" (formula "8") (inst "sk=f_0"))
+   (rule "allRight" (formula "8") (inst "sk=o_0"))
+   (rule "orRight" (formula "8"))
+   (rule "orRight" (formula "8"))
+   (rule "orRight" (formula "8"))
+   (rule "pullOutSelect" (formula "11") (term "0") (inst "selectSK=f_0_0"))
+   (rule "simplifySelectOfStore" (formula "1"))
+    (builtin "One Step Simplification" (formula "1"))
+   (rule "castDel" (formula "1") (term "1,0"))
+   (rule "eqSymm" (formula "12"))
+   (rule "eqSymm" (formula "1") (term "0,0,0"))
+   (rule "eqSymm" (formula "1") (term "1,0,0"))
+   (rule "replace_known_right" (formula "1") (term "0,0") (ifseqformula "9"))
+    (builtin "One Step Simplification" (formula "1") (ifInst ""  (formula "12")))
+   (rule "closeFalse" (formula "1"))
+)
 )
 }

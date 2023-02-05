@@ -16,15 +16,14 @@ public class FileReader {
     //@ ensures filereader(this, STATE_INIT, _);
   {
     this.state = STATE_INIT;
-    this.remaining = 20;
   }
 
-  public boolean open()
+  public void open()
     //@ requires filereader(this, STATE_INIT, _);
     //@ ensures filereader(this, STATE_OPENED, _);
   {
+    this.remaining = 20;
     this.state = STATE_OPENED;
-    return true;
   }
 
   public byte read()

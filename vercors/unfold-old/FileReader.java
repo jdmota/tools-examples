@@ -4,16 +4,16 @@ public class FileReader {
 
   //@ ensures Perm(state, 1) ** Perm(remaining, 1) ** state == 1 ** remaining >= 0;
   public FileReader() {
+    this.remaining = 0;
     //@ ghost this.state = 1;
-    this.remaining = 20;
   }
 
   //@ context Perm(state, 1) ** Perm(remaining, 1) ** remaining >= 0;
   //@ requires state == 1;
-  //@ ensures state == 2 ** remaining == \old(remaining);
-  public boolean open() {
+  //@ ensures state == 2;
+  public void open() {
+    this.remaining = 20;
     //@ ghost this.state = 2;
-    return true;
   }
 
   //@ context Perm(state, 1) ** Perm(remaining, 1) ** remaining >= 0;

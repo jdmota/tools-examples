@@ -22,7 +22,6 @@ public final class FileReader {
     @*/
   public FileReader() {
     /*@ set state = STATE_INIT;*/
-    this.remaining = 20;
   }
 
   /*@
@@ -33,6 +32,7 @@ public final class FileReader {
     @ ensures !(\exists FileReader f; \fresh(f));
     @*/
   public void open() {
+    this.remaining = 20;
     /*@ set state = STATE_OPENED;*/
   }
 

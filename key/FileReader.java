@@ -21,7 +21,6 @@ public final class FileReader {
     @*/
   public FileReader() {
     /*@ set state = STATE_INIT;*/
-    this.remaining = 20;
   }
 
   /*@
@@ -31,6 +30,7 @@ public final class FileReader {
     @ ensures state == STATE_OPENED;
     @*/
   public void open() {
+    this.remaining = 20;
     /*@ set state = STATE_OPENED;*/
   }
 

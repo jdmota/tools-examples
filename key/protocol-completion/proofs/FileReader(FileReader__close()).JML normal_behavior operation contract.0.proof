@@ -2,7 +2,7 @@
 
 \settings {
 "#Proof-Settings-Config-File
-#Thu Jun 16 17:23:06 BST 2022
+#Sun Feb 05 16:48:40 GMT 2023
 [NewSMT]NoTypeHierarchy=false
 [Labels]UseOriginLabels=true
 [StrategyProperty]QUERYAXIOM_OPTIONS_KEY=QUERYAXIOM_ON
@@ -22,9 +22,9 @@
 [SMTSettings]SelectedTaclets=
 [StrategyProperty]DEP_OPTIONS_KEY=DEP_ON
 [StrategyProperty]AUTO_INDUCTION_OPTIONS_KEY=AUTO_INDUCTION_OFF
-[Strategy]MaximumNumberOfAutomaticApplications=10000
+[Strategy]MaximumNumberOfAutomaticApplications=1000
 [StrategyProperty]STOPMODE_OPTIONS_KEY=STOPMODE_DEFAULT
-[StrategyProperty]CLASS_AXIOM_OPTIONS_KEY=CLASS_AXIOM_FREE
+[StrategyProperty]CLASS_AXIOM_OPTIONS_KEY=CLASS_AXIOM_DELAYED
 [SMTSettings]useConstantsForBigOrSmallIntegers=true
 [StrategyProperty]MPS_OPTIONS_KEY=MPS_MERGE
 [StrategyProperty]SYMBOLIC_EXECUTION_NON_EXECUTION_BRANCH_HIDING_OPTIONS_KEY=SYMBOLIC_EXECUTION_NON_EXECUTION_BRANCH_HIDING_OFF
@@ -49,16 +49,16 @@
 \javaSource "..";
 
 \proofObligation "#Proof Obligation Settings
-#Thu Jun 16 17:23:06 BST 2022
+#Sun Feb 05 16:48:40 GMT 2023
 contract=FileReader[FileReader\\:\\:close()].JML normal_behavior operation contract.0
 name=FileReader[FileReader\\:\\:close()].JML normal_behavior operation contract.0
 class=de.uka.ilkd.key.proof.init.FunctionalOperationContractPO
 ";
 
 \proof {
-(keyLog "0" (keyUser "JOTA" ) (keyVersion "666bcb0c95"))
+(keyLog "0" (keyUser "jdmota" ) (keyVersion "666bcb0c95"))
 
-(autoModeTime "155")
+(autoModeTime "128")
 
 (branch "dummy ID"
  (builtin "One Step Simplification" (formula "1") (newnames "heapAtPre_0,o,f"))
@@ -74,31 +74,31 @@ class=de.uka.ilkd.key.proof.init.FunctionalOperationContractPO
 (rule "eqSymm" (formula "9") (term "1,0,0,1,0,1"))
 (rule "assignment" (formula "9") (term "1"))
  (builtin "One Step Simplification" (formula "9"))
+(rule "methodBodyExpand" (formula "9") (term "1") (newnames "heapBefore_close,savedHeapBefore_close"))
+ (builtin "One Step Simplification" (formula "9"))
+(rule "assignment_write_attribute_this" (formula "9"))
+ (builtin "One Step Simplification" (formula "9"))
+(rule "emptyStatement" (formula "9") (term "1"))
+(rule "methodCallEmpty" (formula "9") (term "1"))
+(rule "tryEmpty" (formula "9") (term "1"))
+(rule "emptyModality" (formula "9") (term "1"))
+ (builtin "One Step Simplification" (formula "9"))
+(rule "eqSymm" (formula "9") (term "1,0,0,1"))
+(rule "dismissNonSelectedField" (formula "9") (term "0,1,0,0,0,0,0,1,0"))
+(rule "dismissNonSelectedField" (formula "9") (term "0,1,0,0"))
+(rule "replace_known_left" (formula "9") (term "1,0,0") (ifseqformula "6"))
+ (builtin "One Step Simplification" (formula "9"))
+(rule "pullOutSelect" (formula "9") (term "0,0,0") (inst "selectSK=FileReader_state_0"))
+(rule "simplifySelectOfStore" (formula "1"))
+ (builtin "One Step Simplification" (formula "1"))
+(rule "castDel" (formula "1") (term "0"))
+(rule "applyEqReverse" (formula "10") (term "0,0,0") (ifseqformula "1"))
+ (builtin "One Step Simplification" (formula "10"))
+(rule "hideAuxiliaryEq" (formula "1"))
 (rule "Class_invariant_axiom_for_FileReader" (formula "7"))
 (rule "applyEq" (formula "7") (term "0") (ifseqformula "6"))
 (rule "qeq_literals" (formula "7"))
 (rule "true_left" (formula "7"))
-(rule "methodBodyExpand" (formula "8") (term "1") (newnames "heapBefore_close,savedHeapBefore_close"))
- (builtin "One Step Simplification" (formula "8"))
-(rule "assignment_write_attribute_this" (formula "8"))
- (builtin "One Step Simplification" (formula "8"))
-(rule "emptyStatement" (formula "8") (term "1"))
-(rule "methodCallEmpty" (formula "8") (term "1"))
-(rule "tryEmpty" (formula "8") (term "1"))
-(rule "emptyModality" (formula "8") (term "1"))
- (builtin "One Step Simplification" (formula "8"))
-(rule "eqSymm" (formula "8") (term "1,0,0,1"))
-(rule "dismissNonSelectedField" (formula "8") (term "0,1,0,0,0,0,0,1,0"))
-(rule "dismissNonSelectedField" (formula "8") (term "0,1,0,0"))
-(rule "replace_known_left" (formula "8") (term "1,0,0") (ifseqformula "6"))
- (builtin "One Step Simplification" (formula "8"))
-(rule "pullOutSelect" (formula "8") (term "0,0,0") (inst "selectSK=FileReader_state_0"))
-(rule "simplifySelectOfStore" (formula "1"))
- (builtin "One Step Simplification" (formula "1"))
-(rule "castDel" (formula "1") (term "0"))
-(rule "applyEqReverse" (formula "9") (term "0,0,0") (ifseqformula "1"))
- (builtin "One Step Simplification" (formula "9"))
-(rule "hideAuxiliaryEq" (formula "1"))
 (rule "Class_invariant_axiom_for_FileReader" (formula "8") (term "1,0"))
 (rule "dismissNonSelectedField" (formula "8") (term "0,1,0"))
 (rule "applyEq" (formula "8") (term "0,1,0") (ifseqformula "6"))

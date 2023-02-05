@@ -17,7 +17,6 @@ public class FileReader {
 
   @Perm(ensures="unique(this!fr) in init")
   public FileReader() {
-    remaining = true;
     opened = false;
     closed = false;
   }
@@ -25,6 +24,7 @@ public class FileReader {
   @Unique(requires="init", ensures="opened", use=Use.FIELDS)
   public void open() {
     opened = true;
+    remaining = true;
   }
 
   @Unique(requires="notEof", ensures="opened", use=Use.FIELDS)
